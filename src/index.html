@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Room Assignments</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body> 
+    <div class="container">
+        <div class="data-container">
+            <div class="students">
+                <label for="studentsInput" class="input-label upload">Upload student data .csv</label>
+                <input type="file" id="studentsInput" accept=".csv" style="display:none">
+                <div id="studentsTable" class="table-container"></div>
+            </div>
+            <div class="rooms">
+                <label for="roomsInput" class="input-label upload">Upload room data .csv</label>
+                <input type="file" id="roomsInput" accept=".csv" style="display:none">
+                <div id="roomsTable" class="table-container"></div>
+            </div>
+        </div>
+
+        <div class="results-container">
+            <button class="download-link" id="downloadAllButton">Download all as .zip</button>
+            <div id="assignmentResults" class="table-container"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.2/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.14/jspdf.plugin.autotable.min.js"></script>
+
+    <script src="app.js"></script>
+</body>
+</html>
