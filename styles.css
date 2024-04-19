@@ -1,0 +1,202 @@
+/* General body styling for better spacing and font */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f9;
+    font-size: 12px;
+}
+
+/* Styling for all input fields, including file inputs */
+input[type="file"] {
+    padding: 8px;
+    margin: 10px 0;
+    border: 2px solid #ccc;
+    display: inline-block;
+    cursor: pointer;
+    color: #333;
+    background-color: #fff;
+    border-radius: 4px;
+    transition: border-color 0.3s;
+}
+
+input[type="file"]:hover,
+input[type="file"]:focus {
+    border-color: #0066cc;
+}
+
+/* Styling for buttons */
+button {
+    padding: 10px 20px;
+    margin-top: 10px;
+    font-size: 16px;
+    color: white;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+button:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+}
+
+button:active {
+    background-color: #397d34;
+    transform: scale(0.95);
+}
+
+/* Adding a small box-shadow for a subtle depth effect */
+button {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+
+
+h1 {
+    color: #333;
+    text-align: center;
+}
+
+.inputs {
+    text-align: center;
+    margin-bottom: 20px;
+}
+/* 
+input[type="file"] {
+    padding: 10px;
+    margin-right: 10px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #45a049;
+} */
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.data-container {
+    flex: 1;
+    max-width: 45%; /* Adjust to keep data on the left */
+    display: flex;
+    flex-direction: column;
+}
+
+.table-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    box-shadow: 0 0 20px rgba(0,0,0,0.15);
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+} 
+
+
+
+/* 
+.table-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    position: relative; 
+    overflow: hidden; 
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    box-shadow: 0 0 20px rgba(0,0,0,0.15);
+    table-layout: fixed; 
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f9f9f9;
+    color: #333;
+    position: sticky;
+    top: 0; 
+    z-index: 10; 
+}
+
+tbody {
+    display: block;
+    overflow-y: auto; 
+    height: 300px; 
+}
+
+tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed; 
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+ */
+
+
+#assignmentResults {
+    flex: 1;
+    max-width: 45%; /* Adjust to keep results on the right */
+    margin-top: 0;
+}
+
+.download-link {
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.download-link:hover {
+    background-color: #45a049;
+}
