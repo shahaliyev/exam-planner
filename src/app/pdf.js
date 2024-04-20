@@ -28,7 +28,10 @@ function createPdfDocument(roomData, roomName) {
     const minWidth = 50;
     const studentNameWidth = Math.max(maxWidth, minWidth);
 
-    doc.autoTable(columns, tableData, {
+    // Use the new autoTable initiation method
+    doc.autoTable({
+        columns: columns,
+        body: tableData,
         startY: 20,
         theme: 'grid',
         headStyles: {
@@ -61,7 +64,6 @@ function createPDFBlob(roomData, roomName) {
     return pdfBlob;
 }
 
-
 async function mergePDFs(jsPDFBlob, uploadedPDFFile) {
     const blobToArrayBuffer = (blob) => {
         return new Promise((resolve, reject) => {
@@ -88,12 +90,24 @@ async function mergePDFs(jsPDFBlob, uploadedPDFFile) {
         // Create a new PDF document
         const mergedPdfDoc = await PDFLib.PDFDocument.create();
 
-        // Copy all pages from the first and second documents to the new document
+        // Standard A4 dimensions at 72 DPI
+        const a4Width = 595.28;
+        const a4Height = 841.89;
+
+        // Copy and scale pages to A4 size
         const copiedPages1 = await mergedPdfDoc.copyPages(pdfDoc1, pdfDoc1.getPageIndices());
-        copiedPages1.forEach(page => mergedPdfDoc.addPage(page));
+        copiedPages1.forEach(page => {
+            page.setWidth(a4Width);
+            page.setHeight(a4Height);
+            mergedPdfDoc.addPage(page);
+        });
 
         const copiedPages2 = await mergedPdfDoc.copyPages(pdfDoc2, pdfDoc2.getPageIndices());
-        copiedPages2.forEach(page => mergedPdfDoc.addPage(page));
+        copiedPages2.forEach(page => {
+            page.setWidth(a4Width);
+            page.setHeight(a4Height);
+            mergedPdfDoc.addPage(page);
+        });
 
         // Save the merged PDF as a new Blob
         const mergedPdfBytes = await mergedPdfDoc.save();

@@ -13,6 +13,9 @@ function downloadSourceFile(){
         '/src/app/pdf.js',
         '/src/app/download.js',
         '/src/app/stats.js',
+        '/data/students.csv',
+        '/data/rooms.csv',
+        '/data/instructions.pdf',
     ]
 
     async function fetchAndAddFile(filePath) {
