@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
     displayCSV(students, 'studentsTable', 'Students Data');
     processAssignments();
 
-    // File input for students
+        // File input for students
     document.getElementById('studentsInput').addEventListener('change', function(event) {
         const file = event.target.files[0];
         Papa.parse(file, {
@@ -23,10 +23,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 students = results.data;
                 displayCSV(students, 'studentsTable', 'Students Data');
                 processAssignments();
+                recalculateAssignedStudentsCount(); // Recalculate assigned students count after uploading students
+                const roomLabels = document.querySelectorAll('.students label');
+                roomLabels.forEach(label => {
+                    label.classList.add('uploaded');
+                });
             }
         });
     });
 
+    // File input for rooms
     document.getElementById('roomsInput').addEventListener('change', function(event) {
         const file = event.target.files[0];
         Papa.parse(file, {
@@ -34,11 +40,25 @@ document.addEventListener('DOMContentLoaded', function () {
             complete: function(results) {
                 rooms = results.data;
                 initializeRoomAssignments(rooms); // Initializes room assignments
-                students = []; // Clear existing students data
                 displayCSV(rooms, 'roomsTable', 'Rooms Data');
                 processAssignments(); // This will now only update the room display since there are no students yet
+                recalculateAssignedStudentsCount(); // Recalculate assigned students count after uploading rooms
+                const roomLabels = document.querySelectorAll('.rooms label');
+                roomLabels.forEach(label => {
+                    label.classList.add('uploaded');
+                });
             }
         });
+    });
+
+
+    document.getElementById('instructionsInput').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        // You can add the necessary handling for the instructions file upload here
+        // For example, if you're using a library like Papa.parse for parsing CSV files, use it accordingly
+        // After successful upload, add the 'uploaded' class to the label associated with the instructions input
+        const instructionsLabel = document.querySelector('label[for="instructionsInput"]');
+        instructionsLabel.classList.add('uploaded');
     });
     
 
@@ -46,6 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (rooms.length > 0 && students.length > 0) {
             assignStudentsToRooms();
             displayRoomAssignments(roomAssignments);
+            displayNotifications();
         } else {
             console.log("Waiting for both rooms and students data to be loaded.");
         }
@@ -91,6 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
+    
     
 
     function assignStudentsToRooms() {
@@ -181,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
     
-            doc.save(`assignments_${roomName}.pdf`);
+            doc.save(`exam_roster_${roomName}.pdf`);
         };
     
         return link;
@@ -316,11 +338,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 csvContent += `${room}, ${student['First Name']}, ${student['Last Name']}, ${student['ID']}, ${student['CRN']}, ${roomAssignments[room].proctor}\n`;
             });
 
-            zip.file(`assignments_${room}.csv`, csvContent);
+            zip.file(`exam_roster_${room}.csv`, csvContent);
 
             // Create PDF and add to ZIP
             let pdfPromise = createPDFBlob(roomAssignments[room], room).then(blob => {
-                zip.file(`assignments_${room}.pdf`, blob);
+                zip.file(`exam_roster_${room}.pdf`, blob);
             });
 
             pdfPromises.push(pdfPromise);
@@ -386,5 +408,86 @@ document.addEventListener('DOMContentLoaded', function () {
             resolve(pdfBlob);
         });
     }
+
+
     
+    function displayNotifications() {
+        const totalStudents = calculateTotalStudents();
+        const totalCapacity = calculateTotalRoomCapacity();
+        const assignedStudents = calculateAssignedStudentsCount();
+
+        const notificationArea = document.getElementById('notificationArea');
+        let message = `Total Students: ${totalStudents}, Total Room Capacity: ${totalCapacity}, Assigned Students: ${assignedStudents}`;
+        if (totalStudents > totalCapacity) {
+            message += "<div class='error-message'>Not all students can be accommodated!</div>";
+        } else if (totalStudents < totalCapacity) {
+            message += "<div class='warning-message'>There are still available seats!</div>";
+        } else {
+            message += "<div class='success-message'>All students are perfectly accommodated!</div>";
+        }
+
+        notificationArea.innerHTML = message;
+    }
+
+    // Existing functions like assignStudentsToRooms(), initializeRoomAssignments(), etc., go here
+
+    function calculateTotalStudents() {
+        // Select the students table
+        const studentsTable = document.getElementById('studentsTable');
+        if (!studentsTable) return 0; // Return 0 if the table is not found
+    
+        // Count the number of rows in the table body
+        const tbody = studentsTable.querySelector('tbody');
+        if (!tbody) return 0; // Return 0 if the table body is not found
+    
+        return tbody.querySelectorAll('tr').length;
+    }
+    
+    function calculateTotalRoomCapacity() {
+        // Select the rooms table
+        const roomsTable = document.getElementById('roomsTable');
+        if (!roomsTable) return 0; // Return 0 if the table is not found
+    
+        // Select all cells containing capacity values and sum them
+        const capacityCells = roomsTable.querySelectorAll('td:nth-child(2)'); // Assuming capacity is in the second column
+        let totalCapacity = 0;
+        capacityCells.forEach(cell => {
+            totalCapacity += parseInt(cell.textContent, 10) || 0; // Parse capacity and add to total, handle NaN with 0
+        });
+    
+        return totalCapacity;
+    }
+    
+    function calculateAssignedStudentsCount() {
+        // Select all assigned students tables
+        const assignedStudentsTables = document.querySelectorAll('.room-container table');
+        let totalCount = 0;
+    
+        // Iterate through each assigned students table and count the number of rows
+        assignedStudentsTables.forEach(table => {
+            const tbody = table.querySelector('tbody');
+            if (tbody) {
+                totalCount += tbody.querySelectorAll('tr').length;
+            }
+        });
+    
+        return totalCount;
+    }
+
+    function recalculateAssignedStudentsCount() {
+        // Call the function to calculate assigned students count
+        const assignedStudentsCount = calculateAssignedStudentsCount();
+    
+        // Update the displayed count on the webpage
+        const assignedStudentsCountElement = document.getElementById('assignedStudentsCount');
+        if (assignedStudentsCountElement) {
+            assignedStudentsCountElement.textContent = assignedStudentsCount;
+        }
+    }
+    
+    
+    
+    
+    // Additional function placeholders and modifications go here
+
 });
