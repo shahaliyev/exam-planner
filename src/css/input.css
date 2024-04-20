@@ -1,0 +1,24 @@
+.input-label, button, .download-link {
+    padding: 8px 20px;
+    margin: 10px 0;
+    color: white;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+button:hover, .input-label:hover, .download-link:hover {
+    background-color: #45a049;
+}
+
+.input-label {
+    background-color: rgb(126, 145, 156);
+}
+
+.uploaded {
+    background-color: rgb(216, 204, 69);
+}

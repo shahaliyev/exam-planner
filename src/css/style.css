@@ -1,80 +1,10 @@
-/* General body styling for better spacing and font */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 20px;
     background-color: #f4f4f9;
-    font-size: 12px;
-}
-
-p {
     font-size: 16px;
 }
-
-
-input[type="file"] {
-    display: none;
-}
-
-/* Styling for buttons */
-.input-label, button, .download-link {
-    padding: 8px 20px;
-    margin: 10px 0;
-    color: white;
-    background-color: #4CAF50;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
-    text-decoration: none;
-    font-size: 14px;
-}
-
-.input-label {
-    background-color: rgb(126, 145, 156);
-}
-
-button:hover, .input-label:hover, .download-link:hover {
-    background-color: #45a049;
-}
-
-
-h1 {
-    /* color: #333; */
-    /* text-align: center; */
-}
-
-
-.table-container {
-    background-color: white;
-    border-radius: 8px;
-    padding: 10px;
-    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-}
-
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 10px 0;
-    /* box-shadow: 0 0 20px rgba(0,0,0,0.15); */
-}
-
-th, td {
-    padding: 8px;
-    text-align: left;
-    /* border-bottom: 1px solid #ddd; */
-}
-
-th {
-    background-color: #f9f9f9;
-    color: #333;
-}
-
-tr:hover {
-    background-color: #f1f1f1;
-} 
 
 .container {
     display: flex;
@@ -84,27 +14,6 @@ tr:hover {
 .data-container {
     display: flex;
     gap: 1em;
-    /* width: 500px; */
-    /* flex-direction: column; */
-}
-
-.students, .rooms {
-    display: flex;
-    flex-direction: column;
-}
-
-.uploaded {
-    /* background-color: transparent; */
-    background-color: rgb(216, 204, 69);
-    /* border: #aeaaaa solid 1px; */
-    /* color: black; */
-    /* font-size: 16px; */
-    /* width: 200px; */
-}
-
-.results-container {
-    display: flex;
-    flex-direction: column;
 }
 
 .data-container .buttons {
@@ -112,28 +21,15 @@ tr:hover {
     justify-content: space-between;
 }
 
-#notificationArea {
-    margin: 20px;
-    font-weight: bold;
-    color: red;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    color: #333;
+.results-container {
+    display: flex;
+    flex-direction: column;
 }
 
-.error-message, .warning-message, .success-message {
-    margin-top: 10px; 
-    font-size: 16px;
+
+.students, .rooms {
+    display: flex;
+    flex-direction: column;
 }
-.error-message {
-    color: red;
-}
-.warning-message {
-    color: rgb(180, 180, 8);
-}
-.success-message {
-    color: rgb(11, 186, 11);
-}
+
+

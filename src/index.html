@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>Student Room Assignments</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/input.css">
+    <link rel="stylesheet" href="css/table.css">
+    <link rel="stylesheet" href="css/stats.css">
 </head>
 <body> 
     <h1>Instructions</h1>
@@ -34,7 +37,7 @@
             <label for="instructionsInput" class="input-label">Upload instructions .pdf (optional)</label>
             <input type="file" id="instructionsInput" accept="application/pdf" style="display:none">
             <button class="download-link" id="downloadAllButton" style="font-size:18px;">Download all exam rosters as .zip</button>
-            <div id="notificationArea"></div>
+            <div id="statsArea"></div>
             <div id="assignmentResults" class="table-container"></div>
         </div>
     </div>
@@ -46,8 +49,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.14/jspdf.plugin.autotable.min.js"></script>
     <script src="https://unpkg.com/pdf-lib@1.16.0/dist/pdf-lib.min.js"></script>
 
-
     <script src="app/helper.js"></script>
+    <script src="app/csv.js"></script>
+    <script src="app/pdf.js"></script>
+    <script src="app/download.js"></script>
+    <script src="app/stats.js"></script>
     <script src="app/app.js"></script>
 </body>
 </html>

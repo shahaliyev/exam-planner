@@ -1,0 +1,29 @@
+
+#statsArea {
+    margin: 20px;
+    font-weight: bold;
+    color: red;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: #333;
+}
+
+.error-message, .warning-message, .success-message {
+    margin-top: 10px; 
+    font-size: 16px;
+}
+
+.error-message {
+    color: red;
+}
+
+.warning-message {
+    color: rgb(180, 180, 8);
+}
+
+.success-message {
+    color: rgb(11, 186, 11);
+}
