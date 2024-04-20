@@ -1,7 +1,8 @@
 function downloadSourceFile(){
     var zip = new JSZip();
     
-    filePaths = [
+    const basePath = 'https://shahaliyev.github.io/exam-planner/';
+    const filePaths = [
         'src/index.html',
         'src/css/style.css',
         'src/css/input.css',
@@ -16,7 +17,7 @@ function downloadSourceFile(){
         'data/students.csv',
         'data/rooms.csv',
         'data/instructions.pdf',
-    ]
+    ].map(path => basePath + path);
 
     async function fetchAndAddFile(filePath) {
         return fetch(filePath)
