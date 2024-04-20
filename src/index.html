@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Student Room Assignments</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body> 
     <h1>Instructions</h1>
-    <p>The program randomly assigns students to rooms and generates correspoding exam rosters for each room as .csv and .pdf files. You can optionally upload a single page .pdf with exam instructions which will be appended as the second page of each roster pdf.</p>
+    <p>The program randomly assigns students to rooms and generates correspoding exam rosters for each room as .csv and .pdf files. You can optionally upload a single page .pdf with exam instructions which will be appended as the second page of each roster pdf [This feature desn't work, will try to fix].</p>
     <p>
         Please upload your student and room information by downloading and modifying the templates:
         <a href="/template/students.csv" download>students.csv</a> and
-        <a href="/template/rooms.csv" download>rooms.csv</a>. Even though you will be notified about inconsistencies, please make sure that the total student count and the total room capacity are exactly the same and double check if all the students have been uniquely assigned to rooms in the generated files. I kindly ask you to notify me about issues if you encounter them.
+        <a href="/template/rooms.csv" download>rooms.csv</a>. You can export your student lists via MyBanner -> Class List -> Subject (for corresponding CRNs) -> Export -> Excel Spreadsheet .xls. 
     </p>
-    <p>You can  <button id="downloadSrc">Download the Source File</button>   and run the program locally. After downloading make sure to unzip and open index.html with any internet browser.</p>
-
+    <p>Even though I tested possible cases, please make sure that the total student count and the total room capacity are exactly the same and double check if all the students have been uniquely assigned to rooms in the generated files. I kindly ask you to notify me about issues if you encounter them.</p>
+    <p>You can  <button id="downloadSrc">Download the Source File</button>   and run the program locally. After downloading, make sure to unzip the folder and open index.html with any internet browser.</p>
     
     <div class="container">
         <div class="data-container">
@@ -47,6 +47,7 @@
     <script src="https://unpkg.com/pdf-lib@1.16.0/dist/pdf-lib.min.js"></script>
 
 
-    <script src="app.js"></script>
+    <script src="app/helper.js"></script>
+    <script src="app/app.js"></script>
 </body>
 </html>

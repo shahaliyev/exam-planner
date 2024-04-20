@@ -6,63 +6,63 @@ document.addEventListener('DOMContentLoaded', function () {
         { Room: 'B203', Capacity: '40', Proctor: 'Proctor4, Proctor5' },
     ];
 
-    let students = generateDefaultStudents(); // Generates default students
-    initializeRoomAssignments(rooms); // Initializes room assignments
+    let students = generateDefaultStudents();
+    initializeRoomAssignments(rooms); 
 
-    // Display initial state
     displayCSV(rooms, 'roomsTable', 'Rooms Data');
     displayCSV(students, 'studentsTable', 'Students Data');
     processAssignments();
 
-        // File input for students
-    document.getElementById('studentsInput').addEventListener('change', function(event) {
+    function handleFileInput(event, entity) {
         const file = event.target.files[0];
         Papa.parse(file, {
             header: true,
             complete: function(results) {
-                students = results.data;
-                displayCSV(students, 'studentsTable', 'Students Data');
-                processAssignments();
-                recalculateAssignedStudentsCount(); // Recalculate assigned students count after uploading students
-                const roomLabels = document.querySelectorAll('.students label');
-                roomLabels.forEach(label => {
-                    label.classList.add('uploaded');
-                });
+                if (entity === 'students') {
+                    students = results.data;
+                } else if (entity === 'rooms') {
+                    rooms = results.data;
+                }
+                displayCSV(entity === 'students' ? students : rooms, entity + 'Table', `${entity.charAt(0).toUpperCase() + entity.slice(1)} Data`);
+                processAssignments(); 
+                recalculateAssignedStudentsCount();
+                const label = document.querySelector(`label[for="${entity}Input"]`);
+                label.classList.add('uploaded');
             }
         });
-    });
+    }
 
-    // File input for rooms
-    document.getElementById('roomsInput').addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        Papa.parse(file, {
-            header: true,
-            complete: function(results) {
-                rooms = results.data;
-                initializeRoomAssignments(rooms); // Initializes room assignments
-                displayCSV(rooms, 'roomsTable', 'Rooms Data');
-                processAssignments(); // This will now only update the room display since there are no students yet
-                recalculateAssignedStudentsCount(); // Recalculate assigned students count after uploading rooms
-                const roomLabels = document.querySelectorAll('.rooms label');
-                roomLabels.forEach(label => {
-                    label.classList.add('uploaded');
+    function displayCSV(data, elementId, title) {
+        let content = `<h2>${title}</h2>`;
+        let table = '<table border="1"><thead><tr>';
+        if (data.length > 0) {
+            Object.keys(data[0]).forEach(key => {
+                table += `<th>${key}</th>`;
+            });
+            table += '</tr></thead><tbody>';
+            data.forEach(row => {
+                table += '<tr>';
+                Object.values(row).forEach(val => {
+                    table += `<td>${val}</td>`;
                 });
-            }
-        });
-    });
+                table += '</tr>';
+            });
+            table += '</tbody></table>';
+            content += table;
+        } else {
+            content += '<p>No data available to display.</p>';
+        }
+        document.getElementById(elementId).innerHTML = content;
+    }
 
-
-    document.getElementById('instructionsInput').addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        // You can add the necessary handling for the instructions file upload here
-        // For example, if you're using a library like Papa.parse for parsing CSV files, use it accordingly
-        // After successful upload, add the 'uploaded' class to the label associated with the instructions input
-        const instructionsLabel = document.querySelector('label[for="instructionsInput"]');
-        instructionsLabel.classList.add('uploaded');
-    });
     
+    document.getElementById('studentsInput').addEventListener('change', (event) => handleFileInput(event, 'students'));
+    document.getElementById('roomsInput').addEventListener('change', (event) => handleFileInput(event, 'rooms'));
+    document.querySelector('#downloadAllButton').addEventListener('click', downloadAllAssignments);
 
+    
     function processAssignments() {
+        initializeRoomAssignments();
         if (rooms.length > 0 && students.length > 0) {
             assignStudentsToRooms();
             displayRoomAssignments(roomAssignments);
@@ -72,59 +72,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
     
-
-    function initializeRoomAssignments(rooms) {
+    function initializeRoomAssignments() {
         roomAssignments = {};
         rooms.forEach(room => {
             roomAssignments[room.Room] = { capacity: parseInt(room.Capacity, 10), students: [], proctor: room.Proctor };
-        });
-    }
-
-    function reinitializeAndProcessAssignments() {
-        initializeRoomAssignments(rooms);
-        if (students.length > 0) {
-            processAssignments();
-        } else {
-            console.log("Student data not loaded or empty.");
-        }
-    }
-    
-    document.getElementById('roomsInput').addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        Papa.parse(file, {
-            header: true,
-            complete: function(results) {
-                rooms = results.data;
-                reinitializeAndProcessAssignments();
-                displayCSV(rooms, 'roomsTable', 'Rooms Data');
-            }
-        });
-    });
-    
-    document.getElementById('studentsInput').addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        Papa.parse(file, {
-            header: true,
-            complete: function(results) {
-                students = results.data;
-                reinitializeAndProcessAssignments();
-                displayCSV(students, 'studentsTable', 'Students Data');
-            }
-        });
-    });
-    
-    
-
-    function assignStudentsToRooms() {
-        shuffleArray(students);
-        students.forEach(student => {
-            let availableRooms = Object.keys(roomAssignments).filter(room => roomAssignments[room].students.length < roomAssignments[room].capacity);
-            if (availableRooms.length > 0) {
-                let randomRoom = availableRooms[Math.floor(Math.random() * availableRooms.length)];
-                roomAssignments[randomRoom].students.push(student);
-            } else {
-                console.log(`No available room for ${student['First Name']} ${student['Last Name']}`);
-            }
         });
     }
 
@@ -141,6 +92,22 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         return defaultStudents;
     }
+    
+    
+
+    function assignStudentsToRooms() {
+        shuffleArray(students);
+        students.forEach(student => {
+            let availableRooms = Object.keys(roomAssignments).filter(room => roomAssignments[room].students.length < roomAssignments[room].capacity);
+            if (availableRooms.length > 0) {
+                let randomRoom = availableRooms[Math.floor(Math.random() * availableRooms.length)];
+                roomAssignments[randomRoom].students.push(student);
+            } else {
+                console.log(`No available room for ${student['First Name']} ${student['Last Name']}`);
+            }
+        });
+    }
+
 
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -150,67 +117,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return array;
     }
 
-    function createPdfDownloadLink(roomData, roomName) {
-        const link = document.createElement('button');
-        link.textContent = `Download ${roomName} Roster .pdf`;
-        link.onclick = function () {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
     
-            // Text details
-            doc.setFontSize(10); // Set font size for the document
-            let roomDetails = `${roomName} | ${roomData.capacity} | ${roomData.proctor}`;
-            doc.text(roomDetails, 15, 10);  // Print the combined details on one line
-    
-            // Define the columns and their titles including a Signature column
-            const columns = [
-                { header: 'First Name', dataKey: 'FirstName' },
-                { header: 'Last Name', dataKey: 'LastName' },
-                { header: 'ID', dataKey: 'ID' },
-                { header: 'CRN', dataKey: 'CRN' },
-                { header: 'Signature', dataKey: 'Signature' } // Empty data for signatures
-            ];
-    
-            // Map student data for AutoTable
-            const tableData = roomData.students.map(student => ({
-                FirstName: student['First Name'],
-                LastName: student['Last Name'],
-                ID: student['ID'],
-                CRN: student['CRN'],
-                Signature: '' // Placeholder for the signature column
-            }));
-    
-            // Draw table with styles for the header
-            doc.autoTable(columns, tableData, {
-                startY: 20,
-                theme: 'grid',
-                headStyles: {
-                    fillColor: [255, 255, 255], // White color for header background
-                    textColor: [0, 0, 0], // Black color for header text
-                    fontStyle: 'bold' // Bold font style for header
-                },
-                styles: {
-                    cellPadding: 1,
-                    fontSize: 10,
-                    font: 'helvetica',
-                    lineColor: [0, 0, 0],
-                    lineWidth: 0.1,
-                    halign: 'left', // Horizontal alignment of the text
-                    valign: 'middle' // Vertical alignment of the text
-                },
-                columnStyles: {
-                    Signature: { cellWidth: 30 }, // Custom width for signature column
-                }
-            });
-    
-            doc.save(`exam_roster_${roomName}.pdf`);
-        };
-    
-        return link;
-    }
-
-    
-
     function displayRoomAssignments(roomAssignments) {
         const container = document.getElementById('assignmentResults');
         container.innerHTML = ''; // Clear previous results
@@ -225,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
             roomContainer.style.marginBottom = '20px';
     
             // Create download links for CSV and PDF
-            const downloadCsvLink = createRoomDownloadLink(roomData, room);
+            const downloadCsvLink = createCsvDownloadLink(roomData, room);
             const downloadPdfLink = createPdfDownloadLink(roomData, room);
     
             // Append the download links
@@ -262,99 +169,122 @@ document.addEventListener('DOMContentLoaded', function () {
             container.appendChild(roomContainer);
         });
     }
-    
 
-    function createRoomDownloadLink(roomData, roomName) {
-        // Room details as the first descriptive row
-        let roomDetails = [
-            `${roomName}, ${roomData.capacity}, ${roomData.proctor}`
+
+    function createDownloadLink(filename, content, contentType, text) {
+        const blob = new Blob([content], { type: contentType });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.textContent = text;
+        link.className = 'download-link';
+        link.style.margin = '10px';
+        link.style.display = 'inline-block';
+
+        // Cleanup URL when the element is removed or replaced
+        link.addEventListener('click', () => {
+            setTimeout(() => URL.revokeObjectURL(url), 100);
+        });
+
+        return link;
+    }
+
+    function preparePdfData(roomData, roomName) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.setFontSize(10);
+        let roomDetails = `${roomName} | ${roomData.capacity} | ${roomData.proctor}`;
+        doc.text(roomDetails, 15, 10);
+
+        const columns = [
+            { header: 'First Name', dataKey: 'FirstName' },
+            { header: 'Last Name', dataKey: 'LastName' },
+            { header: 'ID', dataKey: 'ID' },
+            { header: 'CRN', dataKey: 'CRN' },
+            { header: 'Signature', dataKey: 'Signature' }
         ];
-    
-        // Prepare CSV content manually
-        let csvContent = roomDetails.join(", ") + "\n";
-        csvContent += "FirstName, LastName, ID, CRN, Signature\n"; // Column headers
-    
-        // Add student data to the CSV content
+
+        const tableData = roomData.students.map(student => ({
+            FirstName: student['First Name'],
+            LastName: student['Last Name'],
+            ID: student['ID'],
+            CRN: student['CRN'],
+            Signature: ''
+        }));
+
+        doc.autoTable(columns, tableData, {
+            startY: 20,
+            theme: 'grid',
+            headStyles: {
+                fillColor: [255, 255, 255],
+                textColor: [0, 0, 0],
+                fontStyle: 'bold'
+            },
+            styles: {
+                cellPadding: 1,
+                fontSize: 10,
+                font: 'helvetica',
+                lineColor: [0, 0, 0],
+                lineWidth: 0.1,
+                halign: 'left',
+                valign: 'middle'
+            },
+            columnStyles: {
+                Signature: { cellWidth: 30 }
+            }
+        });
+
+        return doc;
+    }
+
+    function createPdfDownloadLink(roomData, roomName) {
+        const doc = preparePdfData(roomData, roomName);
+        return createDownloadLink(`exam_roster_${roomName}.pdf`, doc.output(), 'application/pdf', `Download ${roomName} Roster .pdf`);
+    }
+
+    function createCsvDownloadLink(roomData, roomName) {
+        let csvContent = `${roomName}, ${roomData.capacity}, ${roomData.proctor}\nFirstName, LastName, ID, CRN, Signature\n`;
         roomData.students.forEach(student => {
             csvContent += `${student['First Name']}, ${student['Last Name']}, ${student['ID']}, ${student['CRN']}\n`;
         });
+        return createDownloadLink(`exam_roster_${roomName}.csv`, csvContent, 'text/csv;charset=utf-8;', `Download ${roomName} Roster .csv`);
+    }
+ 
     
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-    
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `exam_roster_${roomName}.csv`;
-        a.textContent = 'Download ' + roomName + ' Roster .csv';
-        a.className = 'download-link';
-        a.style.margin = '10px';
-        a.style.display = 'inline-block';
-    
-        // Cleanup URL when the element is removed or replaced
-        a.addEventListener('click', () => {
-            setTimeout(() => URL.revokeObjectURL(url), 100);
+    // Utility function to create CSV content
+    function createCSVContent(room, data) {
+        let csvContent = `Room: ${room}, Capacity: ${data.capacity}, Proctor: ${data.proctor}\n`;
+        csvContent += "Room, FirstName, LastName, ID, CRN, Proctor\n";
+        data.students.forEach(student => {
+            csvContent += `${room}, ${student['First Name']}, ${student['Last Name']}, ${student['ID']}, ${student['CRN']}, ${data.proctor}\n`;
         });
-    
-        return a;
-    }
-    
-
-    function displayCSV(data, elementId, title) {
-        let content = `<h2>${title}</h2>`;
-        let table = '<table border="1"><thead><tr>';
-        if (data.length > 0) {
-            Object.keys(data[0]).forEach(key => {
-                table += `<th>${key}</th>`;
-            });
-            table += '</tr></thead><tbody>';
-            data.forEach(row => {
-                table += '<tr>';
-                Object.values(row).forEach(val => {
-                    table += `<td>${val}</td>`;
-                });
-                table += '</tr>';
-            });
-            table += '</tbody></table>';
-            content += table;
-        } else {
-            content += '<p>No data available to display.</p>';
-        }
-        document.getElementById(elementId).innerHTML = content;
+        return csvContent;
     }
 
-    
-
-    // Event listener for Download All as ZIP, including PDFs
-    document.querySelector('#downloadAllButton').addEventListener('click', function() {
-        var zip = new JSZip(); // Create a new instance of JSZip
-        let pdfPromises = [];
-
-        // Loop through each room assignment and add CSV and PDF to ZIP
-        Object.keys(roomAssignments).forEach(room => {
-            let csvContent = `Room: ${room}, Capacity: ${roomAssignments[room].capacity}, Proctor: ${roomAssignments[room].proctor}\n`;
-            csvContent += "Room, FirstName, LastName, ID, CRN, Proctor\n";
-
-            roomAssignments[room].students.forEach(student => {
-                csvContent += `${room}, ${student['First Name']}, ${student['Last Name']}, ${student['ID']}, ${student['CRN']}, ${roomAssignments[room].proctor}\n`;
-            });
-
+    // Main function to handle the ZIP creation and download
+    async function downloadAllAssignments() {
+        const zip = new JSZip();
+        const pdfPromises = Object.keys(roomAssignments).map(async room => {
+            const csvContent = createCSVContent(room, roomAssignments[room]);
             zip.file(`exam_roster_${room}.csv`, csvContent);
 
-            // Create PDF and add to ZIP
-            let pdfPromise = createPDFBlob(roomAssignments[room], room).then(blob => {
-                zip.file(`exam_roster_${room}.pdf`, blob);
-            });
-
-            pdfPromises.push(pdfPromise);
+            const blob = await createPDFBlob(roomAssignments[room], room);
+            zip.file(`exam_roster_${room}.pdf`, blob);
         });
 
-        // Generate the ZIP file after all PDFs have been created and added
-        Promise.all(pdfPromises).then(() => {
-            zip.generateAsync({type:"blob"}).then(function(content) {
-                saveAs(content, "all_room_assignments.zip");
-            });
-        });
-    });
+        try {
+            await Promise.all(pdfPromises);
+            const content = await zip.generateAsync({type: "blob"});
+            saveAs(content, "all_room_assignments.zip");
+        } catch (error) {
+            console.error('Error while creating ZIP:', error);
+        }
+    }
+
+
+
 
     function createPDFBlob(roomData, roomName) {
         return new Promise((resolve, reject) => {
@@ -429,8 +359,6 @@ document.addEventListener('DOMContentLoaded', function () {
         notificationArea.innerHTML = message;
     }
 
-    // Existing functions like assignStudentsToRooms(), initializeRoomAssignments(), etc., go here
-
     function calculateTotalStudents() {
         // Select the students table
         const studentsTable = document.getElementById('studentsTable');
@@ -484,6 +412,18 @@ document.addEventListener('DOMContentLoaded', function () {
             assignedStudentsCountElement.textContent = assignedStudentsCount;
         }
     }
+
+
+    var instructionsPdfBlob = null; 
+
+    document.getElementById('instructionsInput').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file.type === "application/pdf") {
+            instructionsPdfBlob = file;
+            const instructionsLabel = document.querySelector('label[for="instructionsInput"]');
+            instructionsLabel.classList.add('uploaded');
+        }
+    });
     
     
     
