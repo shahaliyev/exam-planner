@@ -27,23 +27,24 @@ function downloadSourceFile(){
 
     Promise.all(fetchPromises)
         .then(() => {
-            // Generate the zip file
             return zip.generateAsync({ type: "blob" });
         })
         .then(function(content) {
-            // Trigger the download
             saveAs(content, "exam-planner.zip");
         });
 }
 
 
-async function downloadAll() {
+async function downloadAll(instructionsFile) {
     const zip = new JSZip();
     const pdfPromises = Object.keys(roomAssignments).map(async room => {
         const csvContent = createCSVContent(roomAssignments[room], room);
         zip.file(`csv/exam_roster_${room}.csv`, csvContent);
 
-        const blob = await createPDFBlob(roomAssignments[room], room);
+        let blob = createPDFBlob(roomAssignments[room], room);
+        if (instructionsFile) {
+            blob = await mergePDFs(blob, instructionsFile)
+        }
         zip.file(`pdf/exam_roster_${room}.pdf`, blob);
     });
 
@@ -77,12 +78,19 @@ function createDownloadLink(filename, content, contentType, text) {
     return link;
 }
 
-function createPdfDownloadLink(roomData, roomName) {
-    const doc = preparePDFData(roomData, roomName);
-    return createDownloadLink(`exam_roster_${roomName}.pdf`, doc.output(), 'application/pdf', `Download ${roomName} Roster .pdf`);
+async function createPdfDownloadLink(roomData, roomName, instructionsFile) {
+    let blob = createPDFBlob(roomData, roomName);
+    if (instructionsFile) {
+        blob = await mergePDFs(blob, instructionsFile)
+    }
+    return createDownloadLink(`exam_roster_${roomName}.pdf`, blob, 'application/pdf', `Download ${roomName} Roster .pdf`);
 }
 
 function createCsvDownloadLink(roomData, roomName) {
     let csvContent = createCSVContent(roomData, roomName)
     return createDownloadLink(`exam_roster_${roomName}.csv`, csvContent, 'text/csv;charset=utf-8;', `Download ${roomName} Roster .csv`);
 }
+
+
+
+

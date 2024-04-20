@@ -1,18 +1,25 @@
 document.addEventListener('DOMContentLoaded', function () {
     let rooms = generateDefaultRooms();
     let students = generateDefaultStudents();
+    let instructionsFile = document.getElementById('instructionsInput').files[0];
 
     displayCSV(rooms, 'roomsTable', 'Rooms Data');
     displayCSV(students, 'studentsTable', 'Students Data');
 
     processAssignments();
 
-
     document.getElementById('studentsInput').addEventListener('change', (event) => handleFileInput(event, 'students'));
     document.getElementById('roomsInput').addEventListener('change', (event) => handleFileInput(event, 'rooms'));
-    document.querySelector('#downloadAllButton').addEventListener('click', downloadAll);
     document.getElementById('downloadSrc').addEventListener('click', downloadSourceFile);
+    document.getElementById('instructionsInput').addEventListener('change', handleInstructionsInput);
+    setupDownloadListener(instructionsFile);
 
+    function setupDownloadListener(file) {
+        const button = document.getElementById('downloadAllButton');
+        button.removeEventListener('click', button.clickListener);
+        button.clickListener = () => downloadAll(file);
+        button.addEventListener('click', button.clickListener);
+    }
 
     function processAssignments() {
         roomAssignments = {};
@@ -47,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const container = document.getElementById('assignmentResults');
         container.innerHTML = ''; 
     
-        Object.keys(roomAssignments).forEach(room => {
+        Object.keys(roomAssignments).forEach(async room => {
             const roomData = roomAssignments[room];
             const students = roomData.students;
     
@@ -57,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
             roomContainer.style.marginBottom = '20px';
 
             const downloadCsvLink = createCsvDownloadLink(roomData, room);
-            const downloadPdfLink = createPdfDownloadLink(roomData, room);
+            const downloadPdfLink = await createPdfDownloadLink(roomData, room, instructionsFile);
     
             roomContainer.appendChild(downloadCsvLink);
             roomContainer.appendChild(downloadPdfLink);
@@ -87,6 +94,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
             container.appendChild(roomContainer);
         });
+    }
+
+
+    function handleInstructionsInput(event) {
+        instructionsFile = event.target.files[0];
+        displayRoomAssignments(roomAssignments);
+        setupDownloadListener(instructionsFile); 
+        const label = document.querySelector(`label[for="instructionsInput"]`);
+        label.classList.add('uploaded');
     }
 
 
@@ -124,6 +140,5 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-    
 
 });

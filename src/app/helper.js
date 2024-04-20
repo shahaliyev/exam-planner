@@ -1,16 +1,3 @@
-// For Future Instructions.pdf
-// var instructionsPdfBlob = null; 
-
-// document.getElementById('instructionsInput').addEventListener('change', function(event) {
-//     const file = event.target.files[0];
-//     if (file.type === "application/pdf") {
-//         instructionsPdfBlob = file;
-//         const instructionsLabel = document.querySelector('label[for="instructionsInput"]');
-//         instructionsLabel.classList.add('uploaded');
-//     }
-// });
-
-
 function generateDefaultStudents() {
     let defaultStudents = [];
     const crns = [20415, 20416, 20417];
@@ -52,4 +39,3 @@ function sumDomElementsTextContent(selector) {
     return Array.from(document.querySelectorAll(selector))
         .reduce((acc, elem) => acc + (parseInt(elem.textContent, 10) || 0), 0);
 }
-
