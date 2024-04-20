@@ -27,24 +27,30 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // File input for rooms
     document.getElementById('roomsInput').addEventListener('change', function(event) {
         const file = event.target.files[0];
         Papa.parse(file, {
             header: true,
             complete: function(results) {
                 rooms = results.data;
-                initializeRoomAssignments(rooms);
+                initializeRoomAssignments(rooms); // Initializes room assignments
+                students = []; // Clear existing students data
                 displayCSV(rooms, 'roomsTable', 'Rooms Data');
-                processAssignments();
+                processAssignments(); // This will now only update the room display since there are no students yet
             }
         });
     });
+    
 
     function processAssignments() {
-        assignStudentsToRooms();
-        displayRoomAssignments(roomAssignments);
+        if (rooms.length > 0 && students.length > 0) {
+            assignStudentsToRooms();
+            displayRoomAssignments(roomAssignments);
+        } else {
+            console.log("Waiting for both rooms and students data to be loaded.");
+        }
     }
+    
 
     function initializeRoomAssignments(rooms) {
         roomAssignments = {};
@@ -52,6 +58,40 @@ document.addEventListener('DOMContentLoaded', function () {
             roomAssignments[room.Room] = { capacity: parseInt(room.Capacity, 10), students: [], proctor: room.Proctor };
         });
     }
+
+    function reinitializeAndProcessAssignments() {
+        initializeRoomAssignments(rooms);
+        if (students.length > 0) {
+            processAssignments();
+        } else {
+            console.log("Student data not loaded or empty.");
+        }
+    }
+    
+    document.getElementById('roomsInput').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        Papa.parse(file, {
+            header: true,
+            complete: function(results) {
+                rooms = results.data;
+                reinitializeAndProcessAssignments();
+                displayCSV(rooms, 'roomsTable', 'Rooms Data');
+            }
+        });
+    });
+    
+    document.getElementById('studentsInput').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        Papa.parse(file, {
+            header: true,
+            complete: function(results) {
+                students = results.data;
+                reinitializeAndProcessAssignments();
+                displayCSV(students, 'studentsTable', 'Students Data');
+            }
+        });
+    });
+    
 
     function assignStudentsToRooms() {
         shuffleArray(students);
@@ -262,42 +302,46 @@ document.addEventListener('DOMContentLoaded', function () {
 
     
 
-    
+    // Event listener for Download All as ZIP, including PDFs
+    document.querySelector('#downloadAllButton').addEventListener('click', function() {
+        var zip = new JSZip(); // Create a new instance of JSZip
+        let pdfPromises = [];
 
-    document.querySelector('#downloadAllButton').addEventListener('click', async function() {
-        var zip = new JSZip();
-        var csvFolder = zip.folder("csv");
-        var pdfFolder = zip.folder("pdf");
-    
-        // Loop through each room assignment and add both CSV and PDF files
-        const pdfPromises = Object.keys(roomAssignments).map(async room => {
-            // Generate CSV
-            let csvContent = `Room: ${room}, Capacity: ${roomAssignments[room].capacity}, Proctor: ${roomAssignments[room].proctor}\nRoom, FirstName, LastName, ID, CRN, Proctor\n`;
+        // Loop through each room assignment and add CSV and PDF to ZIP
+        Object.keys(roomAssignments).forEach(room => {
+            let csvContent = `Room: ${room}, Capacity: ${roomAssignments[room].capacity}, Proctor: ${roomAssignments[room].proctor}\n`;
+            csvContent += "Room, FirstName, LastName, ID, CRN, Proctor\n";
+
             roomAssignments[room].students.forEach(student => {
                 csvContent += `${room}, ${student['First Name']}, ${student['Last Name']}, ${student['ID']}, ${student['CRN']}, ${roomAssignments[room].proctor}\n`;
             });
-            csvFolder.file(`assignments_${room}.csv`, csvContent);
-    
-            // Generate PDF
-            const pdfBlob = await generatePDFBlob(roomAssignments[room], room);
-            pdfFolder.file(`assignments_${room}.pdf`, pdfBlob);
+
+            zip.file(`assignments_${room}.csv`, csvContent);
+
+            // Create PDF and add to ZIP
+            let pdfPromise = createPDFBlob(roomAssignments[room], room).then(blob => {
+                zip.file(`assignments_${room}.pdf`, blob);
+            });
+
+            pdfPromises.push(pdfPromise);
         });
-    
-        // Wait for all PDFs to be processed and then generate the ZIP file
+
+        // Generate the ZIP file after all PDFs have been created and added
         Promise.all(pdfPromises).then(() => {
-            zip.generateAsync({ type: "blob" }).then(content => {
+            zip.generateAsync({type:"blob"}).then(function(content) {
                 saveAs(content, "all_room_assignments.zip");
             });
         });
     });
-    
-    function generatePDFBlob(roomData, roomName) {
-        return new Promise(resolve => {
+
+    function createPDFBlob(roomData, roomName) {
+        return new Promise((resolve, reject) => {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
+    
             let roomDetails = `${roomName} | ${roomData.capacity} | ${roomData.proctor}`;
             doc.setFontSize(10);
-            doc.text(roomDetails, 10, 10);
+            doc.text(roomDetails, 15, 10);
     
             const columns = [
                 { header: 'First Name', dataKey: 'FirstName' },
@@ -306,24 +350,41 @@ document.addEventListener('DOMContentLoaded', function () {
                 { header: 'CRN', dataKey: 'CRN' },
                 { header: 'Signature', dataKey: 'Signature' }
             ];
+    
             const tableData = roomData.students.map(student => ({
                 FirstName: student['First Name'],
                 LastName: student['Last Name'],
                 ID: student['ID'],
                 CRN: student['CRN'],
-                Signature: ''
+                Signature: '' // Placeholder for the signature column
             }));
+    
             doc.autoTable(columns, tableData, {
                 startY: 20,
                 theme: 'grid',
-                headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0], fontStyle: 'bold' },
-                styles: { cellPadding: 1, fontSize: 10, font: 'helvetica', lineColor: [0, 0, 0], lineWidth: 0.1 }
+                headStyles: {
+                    fillColor: [255, 255, 255], // White color for header background
+                    textColor: [0, 0, 0], // Black color for header text
+                    fontStyle: 'bold' // Bold font style for header
+                },
+                styles: {
+                    cellPadding: 1,
+                    fontSize: 10,
+                    font: 'helvetica',
+                    lineColor: [0, 0, 0],
+                    lineWidth: 0.1,
+                    halign: 'left', // Horizontal alignment of the text
+                    valign: 'middle' // Vertical alignment of the text
+                },
+                columnStyles: {
+                    Signature: { cellWidth: 30 } // Custom width for signature column
+                }
             });
-            doc.output('blob', { callback: blob => resolve(blob) });
+    
+            // Convert PDF to Blob
+            const pdfBlob = doc.output('blob');
+            resolve(pdfBlob);
         });
     }
-    
-
-
     
 });

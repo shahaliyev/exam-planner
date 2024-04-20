@@ -21,6 +21,8 @@
         </div>
 
         <div class="results-container">
+            <label for="instructionsInput" class="input-label upload">Upload Instructions PDF (optional)</label>
+            <input type="file" id="instructionsInput" accept="application/pdf" style="display:none">
             <button class="download-link" id="downloadAllButton">Download all as .zip</button>
             <div id="assignmentResults" class="table-container"></div>
         </div>
@@ -31,6 +33,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.2/FileSaver.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.14/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.16.0/dist/pdf-lib.min.js"></script>
+
 
     <script src="app.js"></script>
 </body>
