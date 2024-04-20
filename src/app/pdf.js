@@ -1,29 +1,32 @@
 function createPdfDocument(roomData, roomName) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold'); // Set font to bold
 
-    // Format the room details in bold
-    const roomDetails = `${roomName} | Capacity: ${roomData.capacity} | Proctor: ${roomData.proctor}`;
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+
+    const roomDetails = `${roomName} (${roomData.capacity}) ${roomData.proctor}`;
     doc.text(roomDetails, 15, 10);
 
-    // Reset font style to normal for the table content
     doc.setFont('helvetica', 'normal');
 
     const columns = [
-        { header: 'Full Name', dataKey: 'FullName' },
+        { header: 'Student Name', dataKey: 'StudentName' },
         { header: 'ID', dataKey: 'ID' },
         { header: 'CRN', dataKey: 'CRN' },
         { header: 'Signature', dataKey: 'Signature' }
     ];
 
     const tableData = roomData.students.map(student => ({
-        FullName: student['Full Name'], 
+        StudentName: student['Student Name'],
         ID: student['ID'],
         CRN: student['CRN'],
         Signature: ''
     }));
+
+    const maxWidth = Math.max(...tableData.map(s => doc.getTextWidth(s.StudentName)));
+    const minWidth = 50;
+    const studentNameWidth = Math.max(maxWidth, minWidth);
 
     doc.autoTable(columns, tableData, {
         startY: 20,
@@ -43,7 +46,8 @@ function createPdfDocument(roomData, roomName) {
             valign: 'middle'
         },
         columnStyles: {
-            Signature: { cellWidth: 30 }
+            StudentName: { cellWidth: studentNameWidth },
+            Signature: { cellWidth: 50 }
         }
     });
 

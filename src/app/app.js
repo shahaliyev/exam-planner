@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 let randomRoom = availableRooms[Math.floor(Math.random() * availableRooms.length)];
                 roomAssignments[randomRoom].students.push(student);
             } else {
-                console.log(`No available room for ${student['Full Name']} (${student['ID']})`);
+                console.log(`No available room for ${student['Student Name']} (${student['ID']})`);
             }
         });
     }
@@ -62,11 +62,11 @@ document.addEventListener('DOMContentLoaded', function () {
             roomContainer.appendChild(downloadCsvLink);
             roomContainer.appendChild(downloadPdfLink);
     
-            let tableHtml = `<h2>${room} [${roomData.capacity}] ${roomData.proctor} </h2>
+            let tableHtml = `<h2>${room} (${students.length}/${roomData.capacity}) ${roomData.proctor} </h2>
                              <table border="1">
                              <thead>
                                  <tr>
-                                     <th>Full Name</th>
+                                     <th>Student Name</th>
                                      <th>ID</th>
                                      <th>CRN</th>
                                  </tr>
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
                              <tbody>`;
             students.forEach(student => {
                 tableHtml += `<tr>
-                                  <td>${student['Full Name']}</td>
+                                  <td>${student['Student Name']}</td>
                                   <td>${student['ID']}</td>
                                   <td>${student['CRN']}</td>
                               </tr>`;
@@ -90,24 +90,40 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-
     function handleFileInput(event, entity) {
         const file = event.target.files[0];
+        if (!file) return;
+        
         Papa.parse(file, {
             header: true,
+            skipEmptyLines: true,
             complete: function(results) {
+                const headers = results.meta.fields;
+                const expectedHeaders = entity === 'students' ? ['Student Name', 'ID', 'CRN'] : ['Room', 'Capacity', 'Proctor'];
+    
+                const isHeaderCorrect = expectedHeaders.every(header => headers.includes(header));
+    
+                if (!isHeaderCorrect) {
+                    alert(`The uploaded file for ${entity} does not contain the correct headers. Expected headers: ${expectedHeaders.join(', ')}`);
+                    event.target.value = '';
+                    return;
+                }
+    
                 if (entity === 'students') {
                     students = results.data;
                 } else if (entity === 'rooms') {
                     rooms = results.data;
                 }
+    
                 displayCSV(entity === 'students' ? students : rooms, entity + 'Table', `${entity.charAt(0).toUpperCase() + entity.slice(1)} Data`);
-                processAssignments(); 
+                processAssignments();
                 recalculateAssignedStudentsCount();
                 const label = document.querySelector(`label[for="${entity}Input"]`);
                 label.classList.add('uploaded');
+                event.target.value = '';
             }
         });
     }
+    
 
 });

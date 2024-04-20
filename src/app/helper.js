@@ -16,7 +16,7 @@ function generateDefaultStudents() {
     const crns = [20415, 20416, 20417];
     for (let i = 1; i <= 86; i++) {
         defaultStudents.push({
-            'Full Name': `FullName${i}`,
+            'Student Name': `StudentName${i}`,
             'ID': `StudentID${i}`,
             'CRN': crns[i % crns.length]
         });

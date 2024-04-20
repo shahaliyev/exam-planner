@@ -41,10 +41,10 @@ async function downloadAll() {
     const zip = new JSZip();
     const pdfPromises = Object.keys(roomAssignments).map(async room => {
         const csvContent = createCSVContent(roomAssignments[room], room);
-        zip.file(`exam_roster_${room}.csv`, csvContent);
+        zip.file(`csv/exam_roster_${room}.csv`, csvContent);
 
         const blob = await createPDFBlob(roomAssignments[room], room);
-        zip.file(`exam_roster_${room}.pdf`, blob);
+        zip.file(`pdf/exam_roster_${room}.pdf`, blob);
     });
 
     try {

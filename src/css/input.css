@@ -9,6 +9,7 @@
     transition: background-color 0.3s, transform 0.2s;
     text-decoration: none;
     font-size: 14px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
 }
 
 button:hover, .input-label:hover, .download-link:hover {
