@@ -1,7 +1,7 @@
 function createCSVContent(roomData, roomName) {
-    let csvContent = `${roomName}, ${roomData.capacity}, ${roomData.proctor}\nFirstName, LastName, ID, CRN, Signature\n`;
+    let csvContent = `${roomName}, ${roomData.capacity}, ${roomData.proctor}\nFull Name, ID, CRN, Signature\n`;
     roomData.students.forEach(student => {
-        csvContent += `${student['First Name']}, ${student['Last Name']}, ${student['ID']}, ${student['CRN']}\n`;
+        csvContent += `${student['Full Name']}, ${student['ID']}, ${student['CRN']}\n`;
     });
     return csvContent;
 }

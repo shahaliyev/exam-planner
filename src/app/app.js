@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 let randomRoom = availableRooms[Math.floor(Math.random() * availableRooms.length)];
                 roomAssignments[randomRoom].students.push(student);
             } else {
-                console.log(`No available room for ${student['First Name']} ${student['Last Name']}`);
+                console.log(`No available room for ${student['Full Name']} (${student['ID']})`);
             }
         });
     }
@@ -66,8 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
                              <table border="1">
                              <thead>
                                  <tr>
-                                     <th>First Name</th>
-                                     <th>Last Name</th>
+                                     <th>Full Name</th>
                                      <th>ID</th>
                                      <th>CRN</th>
                                  </tr>
@@ -75,8 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
                              <tbody>`;
             students.forEach(student => {
                 tableHtml += `<tr>
-                                  <td>${student['First Name']}</td>
-                                  <td>${student['Last Name']}</td>
+                                  <td>${student['Full Name']}</td>
                                   <td>${student['ID']}</td>
                                   <td>${student['CRN']}</td>
                               </tr>`;

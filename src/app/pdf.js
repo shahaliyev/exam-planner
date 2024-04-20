@@ -2,20 +2,24 @@ function createPdfDocument(roomData, roomName) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     doc.setFontSize(10);
-    const roomDetails = `${roomName} | ${roomData.capacity} | ${roomData.proctor}`;
+    doc.setFont('helvetica', 'bold'); // Set font to bold
+
+    // Format the room details in bold
+    const roomDetails = `${roomName} | Capacity: ${roomData.capacity} | Proctor: ${roomData.proctor}`;
     doc.text(roomDetails, 15, 10);
 
+    // Reset font style to normal for the table content
+    doc.setFont('helvetica', 'normal');
+
     const columns = [
-        { header: 'First Name', dataKey: 'FirstName' },
-        { header: 'Last Name', dataKey: 'LastName' },
+        { header: 'Full Name', dataKey: 'FullName' },
         { header: 'ID', dataKey: 'ID' },
         { header: 'CRN', dataKey: 'CRN' },
         { header: 'Signature', dataKey: 'Signature' }
     ];
 
     const tableData = roomData.students.map(student => ({
-        FirstName: student['First Name'],
-        LastName: student['Last Name'],
+        FullName: student['Full Name'], 
         ID: student['ID'],
         CRN: student['CRN'],
         Signature: ''

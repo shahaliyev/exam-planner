@@ -1,5 +1,5 @@
 .input-label, button, .download-link {
-    padding: 8px 20px;
+    padding: 8px 16px;
     margin: 10px 0;
     color: white;
     background-color: #4CAF50;
@@ -21,4 +21,8 @@ button:hover, .input-label:hover, .download-link:hover {
 
 .uploaded {
     background-color: rgb(216, 204, 69);
+}
+
+#downloadAllButton {
+    font-size:20px;
 }
