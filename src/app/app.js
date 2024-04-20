@@ -28,8 +28,9 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         if (rooms.length > 0 && students.length > 0) {
             assignStudentsToRooms();
-            displayRoomAssignments(roomAssignments);
-            displayStats();
+            displayRoomAssignments(roomAssignments).then(() => {
+                displayStats();
+            });
         } else {
             console.log("Waiting for both rooms and students data to be loaded.");
         }
@@ -50,50 +51,39 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     
-    function displayRoomAssignments(roomAssignments) {
+    async function displayRoomAssignments(roomAssignments) {
         const container = document.getElementById('assignmentResults');
-        container.innerHTML = ''; 
+        container.innerHTML = '';
     
-        Object.keys(roomAssignments).forEach(async room => {
+        const roomUpdates = Object.keys(roomAssignments).map(async room => {
             const roomData = roomAssignments[room];
             const students = roomData.students;
-    
-            // Create a container for each room's table and download links
+            
             const roomContainer = document.createElement('div');
             roomContainer.className = 'room-container';
             roomContainer.style.marginBottom = '20px';
-
+    
             const downloadCsvLink = createCsvDownloadLink(roomData, room);
             const downloadPdfLink = await createPdfDownloadLink(roomData, room, instructionsFile);
-    
+            
             roomContainer.appendChild(downloadCsvLink);
             roomContainer.appendChild(downloadPdfLink);
-    
-            let tableHtml = `<h2>${room} (${students.length}/${roomData.capacity}) ${roomData.proctor} </h2>
-                             <table border="1">
-                             <thead>
-                                 <tr>
-                                     <th>Student Name</th>
-                                     <th>ID</th>
-                                     <th>CRN</th>
-                                 </tr>
-                             </thead>
-                             <tbody>`;
+            
+            let tableHtml = `<h2>${room} (${students.length}/${roomData.capacity}) ${roomData.proctor}</h2><table border="1"><thead><tr><th>Student Name</th><th>ID</th><th>CRN</th></tr></thead><tbody>`;
             students.forEach(student => {
-                tableHtml += `<tr>
-                                  <td>${student['Student Name']}</td>
-                                  <td>${student['ID']}</td>
-                                  <td>${student['CRN']}</td>
-                              </tr>`;
+                tableHtml += `<tr><td>${student['Student Name']}</td><td>${student['ID']}</td><td>${student['CRN']}</td></tr>`;
             });
             tableHtml += `</tbody></table>`;
-    
+            
             const tableElement = document.createElement('div');
             tableElement.innerHTML = tableHtml;
             roomContainer.appendChild(tableElement);
-
+    
             container.appendChild(roomContainer);
         });
+    
+        await Promise.all(roomUpdates); // Wait for all room updates to complete
+        recalculateAssignedStudentsCount(); // Recalculate after all updates are done
     }
 
 
