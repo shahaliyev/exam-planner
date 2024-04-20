@@ -7,6 +7,10 @@ body {
     font-size: 12px;
 }
 
+p {
+    font-size: 16px;
+}
+
 
 input[type="file"] {
     display: none;
@@ -26,14 +30,18 @@ input[type="file"] {
     font-size: 14px;
 }
 
+.input-label {
+    background-color: rgb(126, 145, 156);
+}
+
 button:hover, .input-label:hover, .download-link:hover {
     background-color: #45a049;
 }
 
 
 h1 {
-    color: #333;
-    text-align: center;
+    /* color: #333; */
+    /* text-align: center; */
 }
 
 

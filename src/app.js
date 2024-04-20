@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function createPdfDownloadLink(roomData, roomName) {
         const link = document.createElement('button');
-        link.textContent = `Download ${roomName} PDF`;
+        link.textContent = `Download ${roomName} Roster .pdf`;
         link.onclick = function () {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
@@ -285,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const a = document.createElement('a');
         a.href = url;
         a.download = `exam_roster_${roomName}.csv`;
-        a.textContent = 'Download ' + roomName + ' Roster';
+        a.textContent = 'Download ' + roomName + ' Roster .csv';
         a.className = 'download-link';
         a.style.margin = '10px';
         a.style.display = 'inline-block';
@@ -488,6 +488,44 @@ document.addEventListener('DOMContentLoaded', function () {
     
     
     
-    // Additional function placeholders and modifications go here
+    document.getElementById('downloadSrc').addEventListener('click', function() {
+        var zip = new JSZip();
+    
+        // Array to hold all fetch promises
+        var fetchPromises = [];
+    
+        // Fetch index.html and add to zip
+        fetchPromises.push(fetch('/src/index.html')
+            .then(response => response.text())
+            .then(content => {
+                zip.file('src/index.html', content);
+            }));
+    
+        // Fetch app.js and add to zip
+        fetchPromises.push(fetch('/src/app.js')
+            .then(response => response.text())
+            .then(content => {
+                zip.file('src/app.js', content);
+            }));
+    
+        // Fetch styles.css and add to zip
+        fetchPromises.push(fetch('/src/styles.css')
+            .then(response => response.text())
+            .then(content => {
+                zip.file('src/styles.css', content);
+            }));
+    
+        // Wait for all fetch promises to resolve
+        Promise.all(fetchPromises)
+            .then(() => {
+                // Generate the zip file
+                return zip.generateAsync({ type: "blob" });
+            })
+            .then(function(content) {
+                // Trigger the download
+                saveAs(content, "exam-planner.zip");
+            });
+    });
+    
 
 });
