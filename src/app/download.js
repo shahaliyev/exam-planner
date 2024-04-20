@@ -2,20 +2,20 @@ function downloadSourceFile(){
     var zip = new JSZip();
     
     filePaths = [
-        '/src/index.html',
-        '/src/css/style.css',
-        '/src/css/input.css',
-        '/src/css/table.css',
-        '/src/css/stats.css',
-        '/src/app/helper.js',
-        '/src/app/app.js',
-        '/src/app/csv.js',
-        '/src/app/pdf.js',
-        '/src/app/download.js',
-        '/src/app/stats.js',
-        '/data/students.csv',
-        '/data/rooms.csv',
-        '/data/instructions.pdf',
+        'src/index.html',
+        'src/css/style.css',
+        'src/css/input.css',
+        'src/css/table.css',
+        'src/css/stats.css',
+        'src/app/helper.js',
+        'src/app/app.js',
+        'src/app/csv.js',
+        'src/app/pdf.js',
+        'src/app/download.js',
+        'src/app/stats.js',
+        'data/students.csv',
+        'data/rooms.csv',
+        'data/instructions.pdf',
     ]
 
     async function fetchAndAddFile(filePath) {

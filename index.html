@@ -4,19 +4,19 @@
     <meta charset="UTF-8">
     <title>Exam Planner</title>
     <base href="https://shahaliyev.github.io/exam-planner/">
-    <link rel="stylesheet" href="/src/css/style.css">
-    <link rel="stylesheet" href="/src/css/input.css">
-    <link rel="stylesheet" href="/src/css/table.css">
-    <link rel="stylesheet" href="/src/css/stats.css">
+    <link rel="stylesheet" href="src/css/style.css">
+    <link rel="stylesheet" href="src/css/input.css">
+    <link rel="stylesheet" href="src/css/table.css">
+    <link rel="stylesheet" href="src/css/stats.css">
 </head>
 <body> 
     <h1>Instructions</h1>
     <p>The program <strong>randomly assigns students to rooms and generates correspoding exam rosters</strong> for each room as .csv and .pdf files. You can optionally upload a single-page .pdf with exam instructions which will be appended as the second page of every roster .pdf.</p>
     <p>
         Please upload your student and room information by downloading and modifying the templates:
-        <a href="/data/students.csv" download>students.csv</a> and
-        <a href="/data/rooms.csv" download>rooms.csv</a>. 
-        You can also test <a href="/data/instructions.pdf" download>instructions.pdf</a>. 
+        <a href="data/students.csv" download>students.csv</a> and
+        <a href="data/rooms.csv" download>rooms.csv</a>. 
+        You can also test <a href="data/instructions.pdf" download>instructions.pdf</a>. 
         Export your student lists via: <pre>MyBanner -> Class List -> Subject (for corresponding CRNs) -> Export -> Excel Spreadsheet - .xls</pre> 
     </p>
     <p>Even if I tested many possible cases, still make sure to double check the input and output files and see if all students have uniquely been assigned to rooms or not. I kindly ask you to notify me about issues if you encounter them (there shouldn't be any issues, jk).</p>
@@ -52,11 +52,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.14/jspdf.plugin.autotable.min.js"></script>
     <script src="https://unpkg.com/pdf-lib@1.16.0/dist/pdf-lib.min.js"></script>
 
-    <script src="/src/app/helper.js"></script>
-    <script src="/src/app/csv.js"></script>
-    <script src="/src/app/pdf.js"></script>
-    <script src="/src/app/download.js"></script>
-    <script src="/src/app/stats.js"></script>
-    <script src="/src/app/app.js"></script>
+    <script src="src/app/helper.js"></script>
+    <script src="src/app/csv.js"></script>
+    <script src="src/app/pdf.js"></script>
+    <script src="src/app/download.js"></script>
+    <script src="src/app/stats.js"></script>
+    <script src="src/app/app.js"></script>
 </body>
 </html>
